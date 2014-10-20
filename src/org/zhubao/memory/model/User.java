@@ -21,7 +21,7 @@ import org.hibernate.annotations.GenericGenerator;
  * @date 2014-10-18
  * @email jasonzhu@augmentum.com.cn
  */
-@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)  
+@Cache(usage=CacheConcurrencyStrategy.READ_WRITE)  
 @Data
 @Entity
 @Table(name = "User")

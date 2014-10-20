@@ -40,6 +40,16 @@ public class TestUserOperation {
 		//session.close();
 	}
 	
+	@Test
+	public void updateUser(){
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		User user = (User) session.get(User.class, "40284e8a492214b901492214bb830000");
+		user.setUsername("Jason");
+		session.getTransaction().commit();
+		//session.close();
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getUsers(){

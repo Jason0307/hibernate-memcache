@@ -5,8 +5,6 @@ package org.zhubao.memory;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import net.rubyeye.xmemcached.KeyIterator;
@@ -22,9 +20,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-
-
+import org.zhubao.memory.util.CustomerizeMapperFactory;
 
 /**
  * @author jason.zhu
@@ -40,22 +36,25 @@ public class TestConnectMemory {
 	@Autowired
 	private MemcachedClient memcachedClient;
 
+	@Autowired
+	private CustomerizeMapperFactory mapperFactory;
 	private long start = 0;
 	private long end = 0;
+
 	@Before
-	public void setUp(){
-	  start = System.currentTimeMillis();
+	public void setUp() {
+		start = System.currentTimeMillis();
 		System.out.println("Start time : " + start);
 	}
-	
+
 	@After
-	public void destroy(){
-	   end = System.currentTimeMillis();
+	public void destroy() {
+		end = System.currentTimeMillis();
 		System.out.println("End Time : " + end);
-		System.out.println("Total cost (ms): " + (end - start) );
+		System.out.println("Total cost (ms): " + (end - start));
 		System.out.println("Total cost (s): " + (end - start) / 1000);
 	}
-	
+
 	@Test
 	public void testConnectSql() throws Exception {
 		for (int i = 101; i < 600; i++) {
@@ -94,37 +93,57 @@ public class TestConnectMemory {
 	}
 
 	@Test
-	public void testMemoryCachedInsert() throws Exception{
-		for(int i = 101; i < 600 ; i++){
+	public void testMemoryCachedInsert() throws Exception {
+		for (int i = 101; i < 600; i++) {
 			memcachedClient.set("user" + i, 0, "Jason" + i);
 		}
-		
-		for(int i = 101; i < 600 ; i++){
+
+		for (int i = 101; i < 600; i++) {
 			String user = memcachedClient.get("user" + i);
 			System.out.println(user);
 		}
-		
+
 	}
-	
+
 	@Test
-	public void getUserFromCache() throws Exception{
-		Map map = memcachedClient.get("203fa10a9b8abe755b0dfa5508010dc70abd26ed");
-		List list2 = memcachedClient.get("6ee748ce986fd1aebc37b000fc5f3b2a93f10d52"); 
+	public void getUserFromCache() throws Exception {
+		com.googlecode.hibernate.memcached.strategy.AbstractReadWriteMemcachedAccessStrategy.Item item = memcachedClient
+				.get("203fa10a9b8abe755b0dfa5508010dc70abd26ed");
+		if (null != item) {
+			System.out.println(item.getValue());
+		}
+
+		System.out.println(memcachedClient
+				.get("6ee748ce986fd1aebc37b000fc5f3b2a93f10d52"));
 		
-		Map list3 = memcachedClient.get("6b6dbaef1da254af4d5bbed1135ccd98ad1a1036"); 
-		
-		
-		System.out.println(map);
-		System.out.println(list2);
-		System.out.println(list3);
+		com.googlecode.hibernate.memcached.strategy.AbstractReadWriteMemcachedAccessStrategy.Item item2 = memcachedClient
+				.get("6b6dbaef1da254af4d5bbed1135ccd98ad1a1036");
+		if(null != item2){
+			System.out.println(item2.getValue());
+		}
+	
+
+		System.out.println(memcachedClient
+				.get("7b0c3fb1b22f9348ffcc167b85e3a5203fe0a5fa"));
 	}
-	
+
 	@Test
-	public void getMemcahceKeys() throws Exception{
-		KeyIterator it = memcachedClient.getKeyIterator(AddrUtil.getOneAddress("127.0.0.1:11211"));
-		while(it.hasNext()){
+	public void getMemcahceKeys() throws Exception {
+		KeyIterator it = memcachedClient.getKeyIterator(AddrUtil
+				.getOneAddress("127.0.0.1:11211"));
+		while (it.hasNext()) {
 			String key = it.next();
 			System.out.println("key : " + key);
+		}
+	}
+
+	@Test
+	public void clearKeys() throws Exception {
+		KeyIterator it = memcachedClient.getKeyIterator(AddrUtil
+				.getOneAddress("127.0.0.1:11211"));
+		while (it.hasNext()) {
+			String key = it.next();
+			memcachedClient.delete(key);
 		}
 	}
 }
