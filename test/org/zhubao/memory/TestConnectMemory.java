@@ -57,7 +57,7 @@ public class TestConnectMemory {
 
 	@Test
 	public void testConnectSql() throws Exception {
-		for (int i = 101; i < 600; i++) {
+		for (int i = 101; i < 1100; i++) {
 			String uuid = UUID.randomUUID().toString();
 			jdbcTemplate
 					.execute("INSERT INTO User(userId,username,password,emailAddress,age) VALUES("

@@ -8,6 +8,8 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +23,27 @@ import org.zhubao.memory.model.User;
  * @email jasonzhu@augmentum.com.cn
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:applicationContext.xml")
+@ContextConfiguration("classpath:testContext.xml")
 public class TestUserOperation {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
+	private long start = 0;
+	private long end = 0;
+	
+	@Before
+	public void setUp() {
+		start = System.currentTimeMillis();
+		System.out.println("Start time : " + start);
+	}
+
+	@After
+	public void destroy() {
+		end = System.currentTimeMillis();
+		System.out.println("End Time : " + end);
+		System.out.println("Total cost (ms): " + (end - start));
+		System.out.println("Total cost (s): " + (end - start) / 1000);
+	}
 	
 	@Test
 	public void saveUser(){
@@ -59,8 +77,6 @@ public class TestUserOperation {
 		query.setCacheable(true);
 		List<User> users = query.list();
 		System.out.println(users);
-		List<User> users2 = query.list();
-		System.out.println(users2);
 	}
 	
 	@Test
